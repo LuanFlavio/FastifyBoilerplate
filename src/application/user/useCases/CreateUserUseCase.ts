@@ -1,0 +1,3 @@
+export class CreateUserUseCase {
+  // ...implementation details...
+}

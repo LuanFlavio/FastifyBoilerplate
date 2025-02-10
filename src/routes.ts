@@ -1,5 +1,5 @@
 import z from 'zod'
-import { FastifyCustomInstance } from './types/server'
+import { FastifyCustomInstance } from './infra/http/types/server'
 import { randomUUID } from 'node:crypto'
 
 interface IUser {
