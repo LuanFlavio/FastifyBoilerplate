@@ -8,8 +8,8 @@ import {
 } from 'fastify-type-provider-zod'
 import { fastifySwagger } from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
-import { routes } from './routes'
-import { FastifyCustomInstance } from './infra/http/types/server'
+import { routes } from './routes/routes'
+import { FastifyCustomInstance } from './types/server'
 
 const server: FastifyCustomInstance =
   fastify().withTypeProvider<ZodTypeProvider>()
@@ -33,6 +33,4 @@ server.register(fastifySwaggerUi, { routePrefix: '/docs' })
 
 server.register(routes)
 
-server.listen({ port: Number(process.env.PORT) || 3000 }).then(() => {
-  console.log('Server running - Port: ', Number(process.env.PORT) || 3000)
-})
+export { server }

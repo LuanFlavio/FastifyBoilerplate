@@ -1,23 +1,18 @@
 import z from 'zod'
-import { FastifyCustomInstance } from './infra/http/types/server'
 import { randomUUID } from 'node:crypto'
-
-interface IUser {
-  id: string
-  nome: string
-  email: string
-}
+import { IUser } from '../../../shared/dtos/user.dto'
+import { FastifyCustomInstance } from '../types/server'
 
 const users: IUser[] = []
 
-export async function routes(fastify: FastifyCustomInstance) {
+export async function userRoute(fastify: FastifyCustomInstance) {
   fastify.get(
     '/',
     {
       schema: {
         description: 'List users',
         summary: 'List',
-        tags: ['Users'],
+        tags: ['Usuarios'],
         response: {
           200: z.array(
             z.object({
@@ -35,12 +30,12 @@ export async function routes(fastify: FastifyCustomInstance) {
   )
 
   fastify.post(
-    '/user',
+    '/',
     {
       schema: {
         description: 'Create a new user',
         summary: 'Create',
-        tags: ['Users'],
+        tags: ['Usuarios'],
         body: z.object({
           nome: z.string().min(3),
           email: z.string().email(),
