@@ -1,6 +1,8 @@
+import { IUser } from '../../shared/dtos/user.dto'
 import { User } from '../entities/user.entity'
 
 export interface UserRepository {
-  findById(userId: string): Promise<User>
-  save(user: User): Promise<void>
+  findMany(): Promise<IUser[] | null>
+  findById(userId: string): Promise<IUser | null>
+  save(user: User): Promise<IUser | null>
 }

@@ -10,6 +10,6 @@ export interface UpdateUserDto {
 
 export interface IUser {
   id: string
-  nome: string
+  name: string
   email: string
 }

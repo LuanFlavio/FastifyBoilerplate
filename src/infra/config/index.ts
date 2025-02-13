@@ -1,5 +1,5 @@
 const CONFIG = {
-  baseURL: '/api/v2',
+  baseURL: '/api/v1',
 }
 
 export default CONFIG

@@ -1,11 +1,28 @@
 import z from 'zod'
-import { randomUUID } from 'node:crypto'
-import { IUser } from '../../../shared/dtos/user.dto'
 import { FastifyCustomInstance } from '../types/server'
-
-const users: IUser[] = []
+import {
+  CreateUserSchema,
+  ResponseUserSchema,
+} from '../../../shared/schemas/userSchema'
+import { UserController } from '../controllers/user.controller'
+import { CreateUserUseCase } from '../../../application/user/useCases/CreateUserUseCase'
+import { GetUserUseCase } from '../../../application/user/useCases/GetUserUseCase'
+import { GetByIdUserUseCase } from '../../../application/user/useCases/GetByIdUserUseCase'
+import { UserRepositoryTest } from '../../../domain/repositories/user.repositoryTest'
 
 export async function userRoute(fastify: FastifyCustomInstance) {
+  const userRepositoryTest = new UserRepositoryTest()
+
+  const createUserUseCase = new CreateUserUseCase(userRepositoryTest)
+  const getUserUseCase = new GetUserUseCase(userRepositoryTest)
+  const getByIdUserUseCase = new GetByIdUserUseCase(userRepositoryTest)
+
+  const userController = new UserController(
+    createUserUseCase,
+    getUserUseCase,
+    getByIdUserUseCase
+  )
+
   fastify.get(
     '/',
     {
@@ -14,19 +31,26 @@ export async function userRoute(fastify: FastifyCustomInstance) {
         summary: 'List',
         tags: ['Usuarios'],
         response: {
-          200: z.array(
-            z.object({
-              id: z.string(),
-              nome: z.string(),
-              email: z.string(),
-            })
-          ),
+          200: z.array(ResponseUserSchema).nullable(),
         },
       },
     },
-    async (request, reply) => {
-      return users
-    }
+    userController.get
+  )
+
+  fastify.get(
+    '/:id',
+    {
+      schema: {
+        description: 'Users filtered by id',
+        summary: 'User by id',
+        tags: ['Usuarios'],
+        response: {
+          200: ResponseUserSchema.nullable(),
+        },
+      },
+    },
+    userController.getById
   )
 
   fastify.post(
@@ -36,29 +60,10 @@ export async function userRoute(fastify: FastifyCustomInstance) {
         description: 'Create a new user',
         summary: 'Create',
         tags: ['Usuarios'],
-        body: z.object({
-          nome: z.string().min(3),
-          email: z.string().email(),
-        }),
-        response: {
-          201: z.object({
-            id: z.string(),
-            nome: z.string(),
-            email: z.string(),
-          }),
-        },
+        body: CreateUserSchema,
+        response: { 200: ResponseUserSchema.nullable() },
       },
     },
-    async (request, reply) => {
-      const { nome, email } = request.body
-
-      const newUser = users.push({
-        id: randomUUID(),
-        nome,
-        email,
-      })
-
-      return reply.status(201).send(users[newUser - 1])
-    }
+    userController.create
   )
 }
