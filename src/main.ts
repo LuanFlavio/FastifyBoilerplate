@@ -7,4 +7,4 @@ server
   .then(() => {
     console.log('Server running - Port: ', env.PORT)
   })
-  .catch((err) => log(err))
+  .catch(err => log(err))
