@@ -10,6 +10,7 @@ import { fastifySwagger } from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
 import { routes } from './routes/routes'
 import { FastifyCustomInstance } from './types/server'
+import { errorHandler } from '../../presentation/errors/app-error'
 
 const server: FastifyCustomInstance =
   fastify().withTypeProvider<ZodTypeProvider>()
@@ -32,5 +33,7 @@ server.register(fastifySwagger, {
 server.register(fastifySwaggerUi, { routePrefix: '/docs' })
 
 server.register(routes)
+
+server.setErrorHandler(errorHandler)
 
 export { server }
