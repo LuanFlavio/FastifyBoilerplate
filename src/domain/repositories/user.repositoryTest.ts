@@ -1,9 +1,17 @@
 import { IUser } from '../../shared/dtos/user.dto'
+import { LoginUserDTO } from '../../shared/schemas/userSchema'
 import { User } from '../entities/user.entity'
 import { UserRepository } from './user.repository'
 
 export class UserRepositoryTest implements UserRepository {
-  public users: IUser[] = []
+  public users: IUser[] = [
+    {
+      id: '55cf1010-e751-4eb4-afc0-5054fffca773',
+      name: 'string',
+      email: 'user@example.com',
+      password: 'string',
+    },
+  ]
 
   async findMany(): Promise<IUser[] | null> {
     return this.users
@@ -11,6 +19,20 @@ export class UserRepositoryTest implements UserRepository {
 
   async findById(userId: string): Promise<IUser | null> {
     const user = this.users.find(u => u.id === userId)
+
+    return user || null
+  }
+
+  async findByEmail(email: string): Promise<IUser | null> {
+    const user = this.users.find(u => u.email === email)
+
+    return user || null
+  }
+
+  async findByCredentials(credencials: LoginUserDTO): Promise<IUser | null> {
+    const user = this.users.find(
+      u => u.email === credencials.email && u.password === credencials.password
+    )
 
     return user || null
   }

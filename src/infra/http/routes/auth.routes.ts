@@ -1,5 +1,6 @@
 import { FastifyCustomInstance } from '../types/server'
 import passport from '../middlewares/passport.middleware'
+import { LoginUserSchema } from '../../../shared/schemas/userSchema'
 
 export async function authRoutes(fastify: FastifyCustomInstance) {
   fastify.get(
@@ -33,7 +34,30 @@ export async function authRoutes(fastify: FastifyCustomInstance) {
     },
     async (req, rep) => {
       // Sucesso na autenticação
-      rep.redirect('/')
+      //rep.redirect('/')
+      const user = req.user
+      rep.send(JSON.stringify(user, null, 2))
+    }
+  )
+
+  fastify.post(
+    '/login',
+    {
+      schema: {
+        description: 'Login with local authentication',
+        summary: 'Local Login',
+        tags: ['Auth'],
+        body: LoginUserSchema,
+      },
+      preValidation: passport.authenticate('local', {
+        failureRedirect: '/login',
+      }),
+    },
+    async (req, rep) => {
+      // Sucesso na autenticação
+      //rep.redirect('/')
+      const user = req.user
+      rep.send(JSON.stringify(user, null, 2))
     }
   )
 }

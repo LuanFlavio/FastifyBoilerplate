@@ -1,32 +1,77 @@
 import passport from '@fastify/passport'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
+import { Strategy as LocalStrategy } from 'passport-local'
 import { env } from '../../config/env'
+import { CreateUserUseCase } from '../../../application/user/useCases/CreateUserUseCase'
+import { AuthController } from '../controllers/auth.controller'
+import { UserRepositoryTest } from '../../../domain/repositories/user.repositoryTest'
+import { GetByCredencialsUserUseCase } from '../../../application/user/useCases/GetByCredencialsUserUseCase'
+import { GetByEmailUserUseCase } from '../../../application/user/useCases/GetByEmailUserUseCase'
+import { randomUUID } from 'node:crypto'
 
 const callbackURL =
   env.NODE_ENV === 'production'
     ? 'https://seusite.com/api/v1/auth/google/callback'
     : 'http://localhost:3000/api/v1/auth/google/callback'
 
+const userRepositoryTest = new UserRepositoryTest()
+
+const createUserUseCase = new CreateUserUseCase(userRepositoryTest)
+const getByCredencialsUserUseCase = new GetByCredencialsUserUseCase(
+  userRepositoryTest
+)
+const getByEmailUserUseCase = new GetByEmailUserUseCase(userRepositoryTest)
+const controller = new AuthController(
+  createUserUseCase,
+  getByCredencialsUserUseCase,
+  getByEmailUserUseCase
+)
+
 passport.use(
   new GoogleStrategy(
     {
       clientID: env.GOOGLE_CLIENT_ID || '',
       clientSecret: env.GOOGLE_CLIENT_SECRET || '',
-      callbackURL: callbackURL,
+      callbackURL,
       passReqToCallback: true,
     },
     async (req, accessToken, refreshToken, profile, done) => {
-      try {
-        // Aqui você pode salvar ou buscar o usuário no banco de dados
-        const user = {
-          id: profile.id,
-          name: profile.displayName,
-          email: profile.emails?.[0]?.value,
-        }
-        done(null, user)
-      } catch (error) {
-        done(error, false)
+      // Aqui você pode salvar ou buscar o usuário no banco de dados
+      const user = {
+        name: profile.displayName,
+        email: profile.emails?.[0]?.value || '',
+        password: randomUUID(),
       }
+      const verifiedUser = await controller.google(user)
+
+      if (verifiedUser) {
+        done(null, verifiedUser)
+      } else {
+        done('error', false)
+      }
+    }
+  )
+)
+
+passport.use(
+  new LocalStrategy(
+    { usernameField: 'email' },
+    async (email, password, done) => {
+      const verifiedUser = await controller.local({
+        email,
+        password,
+      })
+      if (verifiedUser) {
+        done(null, verifiedUser)
+      } else {
+        done(null, false)
+      }
+      /*User.findOne({ username: username }, function (err: Error | null, user: IUser | null) {
+        if (err) { return done(err); }
+        if (!user) { return done(null, false); }
+        if (!user.verifyPassword(password)) { return done(null, false); }
+        return done(null, user);
+      });*/
     }
   )
 )
