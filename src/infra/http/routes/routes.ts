@@ -5,11 +5,11 @@ import { userRoute } from './users.routes'
 
 const routePaths = {
   auth: CONFIG.baseURL + '/auth',
-  metas: CONFIG.baseURL + '/metas',
-  usuarios: CONFIG.baseURL + '/usuarios',
+  statistics: CONFIG.baseURL + '/statistics',
+  users: CONFIG.baseURL + '/users',
 }
 
 export function routes(fastify: FastifyCustomInstance): void {
   fastify.register(authRoutes, { prefix: routePaths.auth })
-  fastify.register(userRoute, { prefix: routePaths.usuarios })
+  fastify.register(userRoute, { prefix: routePaths.users })
 }

@@ -1,7 +1,7 @@
 import { IUser } from '../../shared/dtos/user.dto'
 import { LoginUserDTO } from '../../shared/schemas/userSchema'
 import { User } from '../entities/user.entity'
-import { UserRepository } from './user.repository'
+import { UserRepository } from '../repositories/user.repository'
 
 export class UserRepositoryTest implements UserRepository {
   public users: IUser[] = [

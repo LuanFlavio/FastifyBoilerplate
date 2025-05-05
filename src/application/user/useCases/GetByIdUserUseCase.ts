@@ -1,4 +1,4 @@
-import { UserRepositoryTest } from '../../../domain/repositories/user.repositoryTest'
+import { UserRepositoryTest } from '../../../domain/mock/user.repository.mock'
 import { PrismaUserRepository } from '../../../infra/database/prisma/user.repository.prisma'
 import { IUser } from '../../../shared/dtos/user.dto'
 

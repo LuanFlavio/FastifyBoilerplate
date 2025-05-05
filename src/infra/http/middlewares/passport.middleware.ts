@@ -4,7 +4,7 @@ import { Strategy as LocalStrategy } from 'passport-local'
 import { env } from '../../config/env'
 import { CreateUserUseCase } from '../../../application/user/useCases/CreateUserUseCase'
 import { AuthController } from '../controllers/auth.controller'
-import { UserRepositoryTest } from '../../../domain/repositories/user.repositoryTest'
+import { UserRepositoryTest } from '../../../domain/mock/user.repository.mock'
 import { GetByCredentialsUserUseCase } from '../../../application/user/useCases/GetByCredentialsUserUseCase'
 import { GetByEmailUserUseCase } from '../../../application/user/useCases/GetByEmailUserUseCase'
 import { randomUUID } from 'node:crypto'
@@ -37,7 +37,6 @@ passport.use(
       passReqToCallback: true,
     },
     async (req, accessToken, refreshToken, profile, done) => {
-      // Aqui você pode salvar ou buscar o usuário no banco de dados
       const user = {
         name: profile.displayName,
         email: profile.emails?.[0]?.value || '',
@@ -67,12 +66,6 @@ passport.use(
       } else {
         done(null, false)
       }
-      /*User.findOne({ username: username }, function (err: Error | null, user: IUser | null) {
-        if (err) { return done(err); }
-        if (!user) { return done(null, false); }
-        if (!user.verifyPassword(password)) { return done(null, false); }
-        return done(null, user);
-      });*/
     }
   )
 )

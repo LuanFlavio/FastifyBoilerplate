@@ -8,7 +8,7 @@ import { UserController } from '../controllers/user.controller'
 import { CreateUserUseCase } from '../../../application/user/useCases/CreateUserUseCase'
 import { GetUserUseCase } from '../../../application/user/useCases/GetUserUseCase'
 import { GetByIdUserUseCase } from '../../../application/user/useCases/GetByIdUserUseCase'
-import { UserRepositoryTest } from '../../../domain/repositories/user.repositoryTest'
+import { UserRepositoryTest } from '../../../domain/mock/user.repository.mock'
 
 export async function userRoute(fastify: FastifyCustomInstance) {
   const userRepositoryTest = new UserRepositoryTest()
