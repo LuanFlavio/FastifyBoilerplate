@@ -5,7 +5,7 @@ import { env } from '../../config/env'
 import { CreateUserUseCase } from '../../../application/user/useCases/CreateUserUseCase'
 import { AuthController } from '../controllers/auth.controller'
 import { UserRepositoryTest } from '../../../domain/repositories/user.repositoryTest'
-import { GetByCredencialsUserUseCase } from '../../../application/user/useCases/GetByCredencialsUserUseCase'
+import { GetByCredentialsUserUseCase } from '../../../application/user/useCases/GetByCredentialsUserUseCase'
 import { GetByEmailUserUseCase } from '../../../application/user/useCases/GetByEmailUserUseCase'
 import { randomUUID } from 'node:crypto'
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt'
@@ -18,13 +18,13 @@ const callbackURL =
 const userRepositoryTest = new UserRepositoryTest()
 
 const createUserUseCase = new CreateUserUseCase(userRepositoryTest)
-const getByCredencialsUserUseCase = new GetByCredencialsUserUseCase(
+const getByCredentialsUserUseCase = new GetByCredentialsUserUseCase(
   userRepositoryTest
 )
 const getByEmailUserUseCase = new GetByEmailUserUseCase(userRepositoryTest)
 const controller = new AuthController(
   createUserUseCase,
-  getByCredencialsUserUseCase,
+  getByCredentialsUserUseCase,
   getByEmailUserUseCase
 )
 

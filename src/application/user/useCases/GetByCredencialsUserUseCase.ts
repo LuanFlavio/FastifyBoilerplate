@@ -3,14 +3,14 @@ import { PrismaUserRepository } from '../../../infra/database/prisma/user.reposi
 import { IUser } from '../../../shared/dtos/user.dto'
 import { LoginUserDTO } from '../../../shared/schemas/userSchema'
 
-export class GetByCredencialsUserUseCase {
+export class GetByCredentialsUserUseCase {
   private userRepository: PrismaUserRepository
 
   constructor(private userRepositoryTest: UserRepositoryTest) {
     this.userRepository = new PrismaUserRepository()
   }
 
-  async execute(credencials: LoginUserDTO): Promise<IUser | null> {
-    return await this.userRepositoryTest.findByCredentials(credencials)
+  async execute(credentials: LoginUserDTO): Promise<IUser | null> {
+    return await this.userRepositoryTest.findByCredentials(credentials)
   }
 }

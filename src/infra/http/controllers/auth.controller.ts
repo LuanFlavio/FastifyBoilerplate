@@ -1,14 +1,14 @@
 import { CreateUserDTO, LoginUserDTO } from '../../../shared/schemas/userSchema'
 import { CreateUserUseCase } from '../../../application/user/useCases/CreateUserUseCase'
 import { IUser } from '../../../shared/dtos/user.dto'
-import { GetByCredencialsUserUseCase } from '../../../application/user/useCases/GetByCredencialsUserUseCase'
+import { GetByCredentialsUserUseCase } from '../../../application/user/useCases/GetByCredentialsUserUseCase'
 import { GetByEmailUserUseCase } from '../../../application/user/useCases/GetByEmailUserUseCase'
 import { JwtUtils } from '../utils/jwt.utils'
 
 export class AuthController {
   constructor(
     private createUserUseCase: CreateUserUseCase,
-    private getByCredencialsUserUseCase: GetByCredencialsUserUseCase,
+    private getByCredentialsUserUseCase: GetByCredentialsUserUseCase,
     private getByEmailUserUseCase: GetByEmailUserUseCase
   ) {
     this.google = this.google.bind(this)
@@ -29,7 +29,7 @@ export class AuthController {
   async local(
     user: LoginUserDTO
   ): Promise<{ user: IUser; token: string } | null> {
-    const result = await this.getByCredencialsUserUseCase.execute(user)
+    const result = await this.getByCredentialsUserUseCase.execute(user)
 
     if (!result) return null
 

@@ -29,9 +29,9 @@ export class UserRepositoryTest implements UserRepository {
     return user || null
   }
 
-  async findByCredentials(credencials: LoginUserDTO): Promise<IUser | null> {
+  async findByCredentials(credentials: LoginUserDTO): Promise<IUser | null> {
     const user = this.users.find(
-      u => u.email === credencials.email && u.password === credencials.password
+      u => u.email === credentials.email && u.password === credentials.password
     )
 
     return user || null
