@@ -8,6 +8,7 @@ import { UserRepositoryTest } from '../../../domain/repositories/user.repository
 import { GetByCredencialsUserUseCase } from '../../../application/user/useCases/GetByCredencialsUserUseCase'
 import { GetByEmailUserUseCase } from '../../../application/user/useCases/GetByEmailUserUseCase'
 import { randomUUID } from 'node:crypto'
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt'
 
 const callbackURL =
   env.NODE_ENV === 'production'
@@ -74,6 +75,23 @@ passport.use(
       });*/
     }
   )
+)
+
+const jwtOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: env.JWT_SECRET,
+}
+
+passport.use(
+  new JwtStrategy(jwtOptions, async (payload, done) => {
+    const user = await controller.jwt(payload.email)
+
+    if (user) {
+      done(null, user)
+    } else {
+      done(null, false)
+    }
+  })
 )
 
 passport.registerUserSerializer(async (user: any) => {

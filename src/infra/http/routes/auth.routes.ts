@@ -1,6 +1,7 @@
 import { FastifyCustomInstance } from '../types/server'
 import passport from '../middlewares/passport.middleware'
 import { LoginUserSchema } from '../../../shared/schemas/userSchema'
+import { IUser } from '../../../shared/dtos/user.dto'
 
 export async function authRoutes(fastify: FastifyCustomInstance) {
   fastify.get(
@@ -51,13 +52,31 @@ export async function authRoutes(fastify: FastifyCustomInstance) {
       },
       preValidation: passport.authenticate('local', {
         failureRedirect: '/login',
+        session: false,
       }),
     },
     async (req, rep) => {
-      // Sucesso na autenticação
-      //rep.redirect('/')
       const user = req.user
-      rep.send(JSON.stringify(user, null, 2))
+      if (!user) {
+        return rep.status(401).send({ message: 'Unauthorized' })
+      }
+      rep.send({ message: 'Authentication successful', user })
+    }
+  )
+
+  fastify.get(
+    '/protected',
+    {
+      schema: {
+        description: 'Protected route',
+        summary: 'Protected',
+        tags: ['Auth'],
+      },
+      preValidation: passport.authenticate('jwt', { session: false }),
+    },
+    async (req, rep) => {
+      const user = req.user as IUser
+      rep.send({ message: 'This is a protected route', user })
     }
   )
 }
