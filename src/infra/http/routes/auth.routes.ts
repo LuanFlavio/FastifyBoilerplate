@@ -2,6 +2,23 @@ import { FastifyCustomInstance } from '../types/server'
 import passport from '../middlewares/passport.middleware'
 import { LoginUserSchema } from '../../../shared/schemas/userSchema'
 import { IUser } from '../../../shared/dtos/user.dto'
+import { TwoFactorAuthController } from '../controllers/2fa.controller'
+import { TwoFactorAuthService } from '../../../application/2fa/2fa.service'
+import {
+  Setup2FASchema,
+  Verify2FASchema,
+  Setup2FAResponseSchema,
+  Verify2FAResponseSchema,
+  ErrorResponseSchema,
+  Setup2FADTO,
+  Verify2FADTO,
+} from '../../../shared/schemas/2fa.schema'
+import { require2FA } from '../middlewares/2fa.middleware'
+
+const twoFactorAuthService = new TwoFactorAuthService()
+const twoFactorAuthController = new TwoFactorAuthController(
+  twoFactorAuthService
+)
 
 export async function authRoutes(fastify: FastifyCustomInstance) {
   fastify.get(
@@ -64,6 +81,44 @@ export async function authRoutes(fastify: FastifyCustomInstance) {
     }
   )
 
+  // Rotas de 2FA
+  fastify.post<{ Body: Setup2FADTO }>(
+    '/2fa/setup',
+    {
+      schema: {
+        tags: ['Auth'],
+        summary: 'Configurar autenticação de dois fatores',
+        description: 'Gera um segredo TOTP e QR Code para configuração do 2FA',
+        body: Setup2FASchema,
+        response: {
+          200: Setup2FAResponseSchema,
+          400: ErrorResponseSchema,
+        },
+      },
+      preValidation: passport.authenticate('jwt', { session: false }),
+    },
+    twoFactorAuthController.setup.bind(twoFactorAuthController)
+  )
+
+  fastify.post<{ Body: Verify2FADTO }>(
+    '/2fa/verify',
+    {
+      schema: {
+        tags: ['Auth'],
+        summary: 'Verificar código TOTP',
+        description: 'Verifica se o código TOTP fornecido é válido',
+        body: Verify2FASchema,
+        response: {
+          200: Verify2FAResponseSchema,
+          400: ErrorResponseSchema,
+        },
+      },
+      preValidation: passport.authenticate('jwt', { session: false }),
+    },
+    twoFactorAuthController.verify.bind(twoFactorAuthController)
+  )
+
+  // Rota protegida com 2FA
   fastify.get(
     '/protected',
     {
@@ -72,7 +127,10 @@ export async function authRoutes(fastify: FastifyCustomInstance) {
         summary: 'Protected',
         tags: ['Auth'],
       },
-      preValidation: passport.authenticate('jwt', { session: false }),
+      preValidation: [
+        passport.authenticate('jwt', { session: false }),
+        require2FA,
+      ],
     },
     async (req, rep) => {
       const user = req.user as IUser
