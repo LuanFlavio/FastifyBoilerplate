@@ -1,13 +1,15 @@
 import CONFIG from '../../config'
 import { FastifyCustomInstance } from '../types/server'
+import { authRoutes } from './auth.routes'
 import { userRoute } from './users.routes'
 
 const routePaths = {
-  login: CONFIG.baseURL + '/login',
-  metas: CONFIG.baseURL + '/metas',
-  usuarios: CONFIG.baseURL + '/usuarios',
+  auth: CONFIG.baseURL + '/auth',
+  statistics: CONFIG.baseURL + '/statistics',
+  users: CONFIG.baseURL + '/users',
 }
 
 export function routes(fastify: FastifyCustomInstance): void {
-  fastify.register(userRoute, { prefix: routePaths.usuarios })
+  fastify.register(authRoutes, { prefix: routePaths.auth })
+  fastify.register(userRoute, { prefix: routePaths.users })
 }

@@ -1,19 +1,15 @@
-import { User } from '../../../domain/entities/user.entity'
 import { UserRepositoryTest } from '../../../domain/mock/user.repository.mock'
 import { PrismaUserRepository } from '../../../infra/database/prisma/user.repository.prisma'
 import { IUser } from '../../../shared/dtos/user.dto'
-import { CreateUserDTO } from '../../../shared/schemas/userSchema'
 
-export class CreateUserUseCase {
+export class GetByEmailUserUseCase {
   private userRepository: PrismaUserRepository
 
   constructor(private userRepositoryTest: UserRepositoryTest) {
     this.userRepository = new PrismaUserRepository()
   }
 
-  async execute(user: CreateUserDTO): Promise<IUser | null> {
-    const userToSave = new User(user)
-
-    return await this.userRepositoryTest.save(userToSave)
+  async execute(email: string): Promise<IUser | null> {
+    return await this.userRepositoryTest.findByEmail(email)
   }
 }
