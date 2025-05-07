@@ -37,7 +37,7 @@ src/
 
 1. Clone o repositório
 ```bash
-git clone https://github.com/seu-usuario/fastify-boilerplate.git
+git clone https://github.com/LuanFlavio/FastifyBoilerplate.git
 cd fastify-boilerplate
 ```
 
